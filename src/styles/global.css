@@ -1,0 +1,32 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f71d1d;
+  }
+  
+  h1 {
+    font-size: 2rem;
+    color: #333;
+  }
+  .searchInput {
+    padding: .5em 1em;
+    border-radius: 2em;
+    border: 2px solid #ddd;
+    width: 40%; 
+    font-size: 1rem;
+    outline: none;
+  }
+
+  .notificationsFrame {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .panel {
+    width: 80%;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  

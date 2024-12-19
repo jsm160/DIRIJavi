@@ -1,4 +1,3 @@
-// src/views/NotFoundPage.tsx
 import React from 'react';
 
 const NotFoundPage: React.FC = () => {

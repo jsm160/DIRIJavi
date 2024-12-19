@@ -1,4 +1,3 @@
-// src/views/ItemListPage.tsx
 import React, { useEffect, useState } from 'react';
 import { Item } from '../models/Item';
 import ItemList from '../components/ItemList';
@@ -9,7 +8,6 @@ const ItemListPage: React.FC = () => {
   const [filteredItems, setFilteredItems] = useState<Item[]>([]);
 
   useEffect(() => {
-    // Supón que tienes una API o datos estáticos para cargar los items
     const fetchedItems: Item[] = [
       { id: '1', name: 'Javier', number: 10, points: 5 },
       { id: '2', name: 'Pablo', number: 20, points: 10 },
@@ -28,7 +26,7 @@ const ItemListPage: React.FC = () => {
 
   return (
     <div>
-      <h1>Lista de Items</h1>
+      <h1>Lista de Jugadores</h1>
       <SearchBar onSearch={handleSearch} />
       <ItemList items={filteredItems} />
     </div>

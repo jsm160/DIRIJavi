@@ -1,0 +1,32 @@
+/* src/components/Header.css */
+header {
+    background-color: #282c34;
+    padding: 15px;
+  }
+  
+  nav ul {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  nav li {
+    margin-right: 20px;
+  }
+  
+  .nav-link {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+  }
+  
+  .nav-link:hover {
+    text-decoration: underline;
+  }
+  
+  .nav-link.active {
+    font-weight: bold;
+    color: #61dafb; /* Cambia el color al de React cuando está activo */
+  }
+  

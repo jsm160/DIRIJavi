@@ -1,25 +1,42 @@
 import React from 'react';
-import { Link, Route, Routes } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const HelpPage: React.FC = () => {
+  const location = useLocation();
+
   return (
     <div>
       <h1>Ayuda</h1>
       <nav>
         <ul>
           <li>
-            <Link to="faq">Preguntas más frecuentes</Link>
+            {/* Usa rutas absolutas para evitar concatenación de rutas */}
+            <Link
+              to="/help/faq"
+              style={{
+                textDecoration: location.pathname === '/help/faq' ? 'underline' : 'none',
+              }}
+            >
+              Preguntas más frecuentes
+            </Link>
           </li>
           <li>
-            <Link to="reference">Referencia</Link>
+            <Link
+              to="/help/reference"
+              style={{
+                textDecoration: location.pathname === '/help/reference' ? 'underline' : 'none',
+              }}
+            >
+              Referencia
+            </Link>
           </li>
         </ul>
       </nav>
 
-      <Routes>
-        <Route path="faq" element={<p>Preguntas más frecuentes...</p>} />
-        <Route path="reference" element={<p>Referencia...</p>} />
-      </Routes>
+      {/* Renderiza el contenido dinámico según la subruta activa */}
+      <div style={{ marginTop: '20px' }}>
+        <Outlet />
+      </div>
     </div>
   );
 };

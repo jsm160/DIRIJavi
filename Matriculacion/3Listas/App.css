@@ -1,0 +1,14 @@
+.ulEnrol {
+    list-style-type: none; 
+    padding: 0; 
+  }
+  
+  .parentLabels {
+    display: flex;
+    align-items: center;
+  }
+  
+  .parentLabels input {
+    margin-right: 10px;
+  }
+  

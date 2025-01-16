@@ -9,6 +9,7 @@ function App() {
   const [ugEnrolments, setUGEnrolments] = useState(0);
   const [pgEnrolments, setPGEnrolments] = useState(0);
   const [students, setStudents] = useState<Student[]>([]);
+  const [editingStudent, setEditingStudent] = useState<Student>();
 
   const handleChangeEnrolments = (updateEnrolments: number) => {
     program === "UG" ? setUGEnrolments(updateEnrolments) : setPGEnrolments(updateEnrolments);
@@ -23,7 +24,26 @@ function App() {
   };
 
   const handleStudentChanged = (student: Student) => {
-    setStudents((prevStudents) => [...prevStudents, student]); // Añadir el nuevo estudiante al estado
+    setStudents((prevStudents) => {
+      // Si el estudiante ya existe (por su ID), lo actualizamos
+      const existingIndex = prevStudents.findIndex((s) => s.id === student.id);
+      if (existingIndex !== -1) {
+        const updatedStudents = [...prevStudents];
+        updatedStudents[existingIndex] = student;
+        return updatedStudents;
+      }
+      // Si es un estudiante nuevo, lo agregamos
+      return [...prevStudents, student];
+    });
+  };
+
+  const handleStudentRemoved = (student: Student): void => {
+    setStudents((prevStudents) => prevStudents.filter((s) => s.id !== student.id));
+    if (student.program === "UG") {
+      setUGEnrolments(ugEnrolments - 1);
+    } else {
+      setPGEnrolments(pgEnrolments - 1);
+    }
   };
 
   return (
@@ -57,10 +77,14 @@ function App() {
         chosenProgram={program}
         onChangeEnrolments={handleChangeEnrolments}
         currentEnrolments={selectedEnrolments()}
-        onStudentChanged={handleStudentChanged} // Emitir el nuevo estudiante
+        onStudentChanged={handleStudentChanged} 
+        editingStudent={editingStudent}
       />
-
-      <EnrolList students={students} /> {/* Pasamos la lista de estudiantes a EnrolList */}
+      <EnrolList
+        students={students}
+        onStudentRemoved={handleStudentRemoved}
+        onStudentEditing={setEditingStudent}
+      />
     </div>
   );
 }

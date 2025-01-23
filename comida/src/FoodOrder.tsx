@@ -3,6 +3,7 @@ import { MenuItem } from "./entities/entities";
 import { foodItemsContext } from "./App";
 import { database } from "./firebase"; // Asegúrate de importar la configuración de Firebase correctamente
 import { ref, onValue, push, update, remove } from "firebase/database";
+import logger from './services/logging'; // Importamos el logger
 
 interface FoodOrderProps {
   food: MenuItem;
@@ -27,37 +28,53 @@ function FoodOrder({ food, onReturnToMenu }: FoodOrderProps) {
         ? Object.entries(data).map(([id, value]) => ({ id, ...(value as any) }))
         : [];
       setItems(formattedData); // Actualizar el estado con los datos obtenidos
+      logger.info('Datos obtenidos de Firebase'); // Log de información
     });
 
     // Limpiar el listener cuando el componente se desmonte
     return () => {
       // Esto es opcional, Firebase generalmente maneja la limpieza de listeners automáticamente.
+      logger.info('Listener limpiado cuando el componente se desmontó');
     };
   }, []); // Este effect se ejecuta una sola vez al montar el componente
 
   // Función para actualizar un ítem en Firebase
-  const updateItem = async (id: number, newName: string, newQuantity: number) => {
-    const itemRef = ref(database, `items/${id}`);
-    await update(itemRef, { 
-      name: newName, // Puedes actualizar el nombre si lo deseas
-      quantity: newQuantity // Actualizar la cantidad del ítem
-    });
+  const updateItem = async (id: number, newName: string) => {
+    logger.info(`Intentando actualizar el ítem ${id} con nuevo nombre: ${newName} y nueva cantidad: ${food.quantity}`);
+    try {
+      const itemRef = ref(database, `items/${id}`);
+      await update(itemRef, { 
+        name: newName, 
+        quantity: food.quantity
+      });
+      logger.info(`Ítem ${id} actualizado con éxito`);
+    } catch (error) {
+      logger.error(`Error al actualizar el ítem ${id}:`);
+    }
   };
 
   // Función para eliminar un ítem en Firebase
   const deleteItem = async (id: number) => {
-    const itemRef = ref(database, `items/${id}`);
-    await remove(itemRef); // Eliminar el nodo del ítem en Firebase
+    logger.info(`Intentando eliminar el ítem ${id}`);
+    try {
+      const itemRef = ref(database, `items/${id}`);
+      await remove(itemRef); // Eliminar el nodo del ítem en Firebase
+      logger.info('Ítem eliminado con éxito');
+    } catch (error) {
+      logger.error(`Error al eliminar el ítem ${id}:`);
+    }
   };
 
   // Maneja el cambio de cantidad
   const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuantity = Number(event.target.value);
+    logger.info(`Cantidad cambiada a: ${newQuantity}`);
     setQuantity(newQuantity);
   };
 
   // Maneja la acción de enviar el pedido
   const handlePlaceOrder = () => {
+    logger.info(`Realizando pedido por ${quantity} de ${food.name}`);
     setIsOrderPlaced(true);
 
     // Actualizar el stock local de los ítems (también puedes actualizar la base de datos aquí)
@@ -83,19 +100,22 @@ function FoodOrder({ food, onReturnToMenu }: FoodOrderProps) {
     // Guardar el pedido en Firebase
     const ordersRef = ref(database, "orders");
     push(ordersRef, newOrder);
+    logger.info('Nuevo pedido enviado a Firebase');
 
     // Actualizar el stock en la base de datos utilizando la función `updateItem`
-    updateItem(food.id, food.name, food.quantity - quantity); // Llamada para actualizar el ítem
+    updateItem(food.id, food.name); // Llamada para actualizar el ítem
   };
 
   // Maneja el retorno al menú
   const handleBackToMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    logger.info('Volviendo al menú');
     setIsOrderPlaced(false); // Ocultar el mensaje de confirmación
     if (onReturnToMenu) onReturnToMenu(event); // Llamar al handler de retorno al menú
   };
 
   // Función para manejar la eliminación de un ítem
   const handleDeleteItem = (id: number) => {
+    logger.warn(`Eliminando el ítem ${id} del menú`);
     deleteItem(id); // Eliminar el ítem de Firebase
     setItems(items.filter(item => item.id !== id)); // Eliminar el ítem del estado local
   };

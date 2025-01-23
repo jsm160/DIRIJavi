@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { MenuItem } from "./entities/entities";
-import Foods from "./Foods";
 import FoodOrder from "./FoodOrder";
 import React from "react";
 
@@ -13,7 +12,7 @@ export const foodItemsContext = React.createContext<MenuItem[]>([]);
 function App() {
   const [isChooseFoodPage, setIsChooseFoodPage] = useState(false);
   const [selectedFood, setSelectedFood] = useState<MenuItem | null>(null); // Producto seleccionado
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([
+  const [menuItems] = useState<MenuItem[]>([
     {
       id: 1,
       name: "Hamburguesa de Pollo",

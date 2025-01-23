@@ -1,13 +1,13 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { defineConfig as vitestDefineConfig } from 'vitest/config'; // Importar configuración de Vitest
-
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    globals: true, // habilitar los globals (como los métodos `describe`, `it`, etc.)
-    environment: 'jsdom', // entorno para pruebas
-    include: ['**/*.test.tsx', '**/*.test.ts'], // especifica qué archivos de prueba deben ejecutarse
-  },
-});
+import { defineConfig, loadEnv } from 'vite'
+import react from '@vitejs/plugin-react'
+// https://vite.dev/cong/
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+   return {
+   base: env.VITE_APP_BASE_URL || '/', // Ajusta la base según la variable
+   build: {
+   outDir: 'docs',
+   },
+   plugins: [react()],
+   }
+  })

@@ -5,8 +5,10 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
    return {
    base: env.VITE_APP_BASE_URL || '/', // Ajusta la base según la variable
+   //base: '/', // La base para el entorno local
+   //base: '/DIRIJavi/comida/', // Ruta base para GitHub Pages
    build: {
-   outDir: 'docs',
+   outDir: 'dist',
    },
    plugins: [react()],
    }

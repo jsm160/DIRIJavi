@@ -2,12 +2,9 @@ import { useState } from "react";
 import { MenuItem } from "./entities/entities";
 import FoodOrder from "./FoodOrder";
 import React from "react";
+import ErrorBoundary from './services/ErrorBoundary';  // Asegúrate de tener el archivo ErrorBoundary.tsx
 
 export const foodItemsContext = React.createContext<MenuItem[]>([]);
-/*{
-  menuItems: MenuItem[];
-  setMenuItems: React.Dispatch<React.SetStateAction<MenuItem[]>>;
-}>({ menuItems: [], setMenuItems: () => {} });*/
 
 function App() {
   const [isChooseFoodPage, setIsChooseFoodPage] = useState(false);
@@ -61,36 +58,38 @@ function App() {
 
   return (
     <foodItemsContext.Provider value={menuItems}>
-      <div className="App">
-        <button
-          className="toggleButton"
-          onClick={() => setIsChooseFoodPage(!isChooseFoodPage)}
-        >
-          {isChooseFoodPage ? "Disponibilidad" : "Pedir Comida"}
-        </button>
-        <h3 className="title">Comida Rápida Online</h3>
+      <ErrorBoundary> {/* Envolvemos toda la App con ErrorBoundary */}
+        <div className="App">
+          <button
+            className="toggleButton"
+            onClick={() => setIsChooseFoodPage(!isChooseFoodPage)}
+          >
+            {isChooseFoodPage ? "Disponibilidad" : "Pedir Comida"}
+          </button>
+          <h3 className="title">Comida Rápida Online</h3>
 
-        {!isChooseFoodPage && (
-          <>
-            <h4 className="subTitle">Menús</h4>
-            <ul className="ulApp">
-              {menuItems.map((item) => (
-                <li key={item.id} className="liApp">
-                  <p>{item.name}</p>
-                  <p>#{item.quantity} disponibles</p>
-                  <button onClick={() => handleSelectFood(item)}>Pedir</button>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-        {isChooseFoodPage && selectedFood && (
-          <FoodOrder
-            food={selectedFood}
-            onReturnToMenu={handleReturnToMenu}
-          />
-        )}
-      </div>
+          {!isChooseFoodPage && (
+            <>
+              <h4 className="subTitle">Menús</h4>
+              <ul className="ulApp">
+                {menuItems.map((item) => (
+                  <li key={item.id} className="liApp">
+                    <p>{item.name}</p>
+                    <p>#{item.quantity} disponibles</p>
+                    <button onClick={() => handleSelectFood(item)}>Pedir</button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          {isChooseFoodPage && selectedFood && (
+            <FoodOrder
+              food={selectedFood}
+              onReturnToMenu={handleReturnToMenu}
+            />
+          )}
+        </div>
+      </ErrorBoundary>
     </foodItemsContext.Provider>
   );
 }

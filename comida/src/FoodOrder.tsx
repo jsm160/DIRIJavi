@@ -1,21 +1,23 @@
-import { useState, useEffect, MouseEventHandler, useContext } from "react";
-import { MenuItem } from "./entities/entities";
-import { foodItemsContext } from "./App";
-import { database } from "./firebase";
-import { ref, onValue, push, update, remove } from "firebase/database";
+import { useState, useEffect } from 'react';
+import { MenuItem } from './entities/entities';
+import { database } from './firebase';
+import { ref, onValue, push, update, remove } from 'firebase/database';
 import logger from './services/logging';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, updateFoodQuantity } from './store';
 
 interface FoodOrderProps {
   food: MenuItem;
-  onReturnToMenu: MouseEventHandler<HTMLButtonElement>;
+  onReturnToMenu: () => void;
 }
 
 function FoodOrder({ food, onReturnToMenu }: FoodOrderProps) {
+  const dispatch = useDispatch();
+  const menuItems = useSelector((state: RootState) => state.food.menuItems);
+  const [items, setItems] = useState<MenuItem[]>(menuItems);
   const [quantity, setQuantity] = useState(1);
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Nuevo estado para controlar la carga
-  const [items, setItems] = useState<MenuItem[]>([]);
-  const menuItems: MenuItem[] = useContext(foodItemsContext) || [];
+  const [isLoading, setIsLoading] = useState(false);
 
   const totalPrice = food.price * quantity;
 
@@ -37,7 +39,7 @@ function FoodOrder({ food, onReturnToMenu }: FoodOrderProps) {
 
   const updateItem = async (id: number, newName: string) => {
     logger.info(`Intentando actualizar el ítem ${id}`);
-    setIsLoading(true); // Activar estado de carga
+    setIsLoading(true);
     try {
       const itemRef = ref(database, `items/${id}`);
       await update(itemRef, {
@@ -48,13 +50,13 @@ function FoodOrder({ food, onReturnToMenu }: FoodOrderProps) {
     } catch (error) {
       logger.error(`Error al actualizar el ítem ${id}: ${error}`);
     } finally {
-      setIsLoading(false); // Desactivar estado de carga
+      setIsLoading(false);
     }
   };
 
   const deleteItem = async (id: number) => {
     logger.info(`Intentando eliminar el ítem ${id}`);
-    setIsLoading(true); // Activar estado de carga
+    setIsLoading(true);
     try {
       const itemRef = ref(database, `items/${id}`);
       await remove(itemRef);
@@ -63,7 +65,7 @@ function FoodOrder({ food, onReturnToMenu }: FoodOrderProps) {
     } catch (error) {
       logger.error(`Error al eliminar el ítem ${id}: ${error}`);
     } finally {
-      setIsLoading(false); // Desactivar estado de carga
+      setIsLoading(false);
     }
   };
 
@@ -74,20 +76,14 @@ function FoodOrder({ food, onReturnToMenu }: FoodOrderProps) {
   };
 
   const handlePlaceOrder = async () => {
-    setIsLoading(true); // Activar estado de carga
-  
+    setIsLoading(true);
+
     try {
       logger.info(`Realizando pedido por ${quantity} de ${food.name}`);
       setIsOrderPlaced(true);
-  
-      const updatedItems = menuItems.map((item: MenuItem) => {
-        if (item.id === food.id) {
-          item.quantity = item.quantity - quantity;
-        }
-        return item;
-      });
-      setItems(updatedItems);
-  
+
+      dispatch(updateFoodQuantity({ id: food.id, quantity: food.quantity - quantity }));
+
       const newOrder = {
         foodName: food.name,
         price: food.price,
@@ -95,26 +91,24 @@ function FoodOrder({ food, onReturnToMenu }: FoodOrderProps) {
         totalPrice: totalPrice,
         timestamp: Date.now(),
       };
-  
+
       const ordersRef = ref(database, "orders");
       await push(ordersRef, newOrder);
       logger.info("Nuevo pedido enviado a Firebase");
-  
-      await updateItem(food.id, food.name); // Actualizar stock en la base de datos
+
+      await updateItem(food.id, food.name);
     } catch (error) {
-      logger.error("Error al enviar el pedido:"+ error);
+      logger.error("Error al enviar el pedido:" + error);
     } finally {
-      // Asegurar que el mensaje se muestra al menos 2 segundos
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      //setIsLoading(false); // Desactivar estado de carga después del tiempo mínimo
+      setIsLoading(false); // Desactivar el loading después del tiempo mínimo
     }
   };
-  
 
-  const handleBackToMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleBackToMenu = () => {
     logger.info("Volviendo al menú");
     setIsOrderPlaced(false);
-    if (onReturnToMenu) onReturnToMenu(event);
+    onReturnToMenu();
   };
 
   const handleDeleteItem = (id: number) => {
@@ -130,14 +124,12 @@ function FoodOrder({ food, onReturnToMenu }: FoodOrderProps) {
         src={`/dist/img/${food.image}`}
         alt={food.name}
       />
-  
+
       {isLoading ? (
         <div className="loadingMessage">
-          {/* Texto de carga */}
           <p style={{ color: "blue", fontWeight: "bold" }}>
             Cargando... Por favor espera.
           </p>
-          {/* Spinner opcional */}
           <div className="spinner" style={{
             width: "40px",
             height: "40px",
@@ -167,13 +159,12 @@ function FoodOrder({ food, onReturnToMenu }: FoodOrderProps) {
       ) : (
         <div className="confirmationMessage">
           <p>¡Pedido enviado con éxito!</p>
-          <p>Stock actualizado: {food.quantity} disponibles</p>
+          <p>Stock actualizado: {food.quantity-quantity} disponibles</p>
           <button onClick={handleBackToMenu}>Volver al Menú</button>
         </div>
       )}
     </div>
   );
-  
 }
 
 export default FoodOrder;

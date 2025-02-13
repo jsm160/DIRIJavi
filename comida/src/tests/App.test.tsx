@@ -1,10 +1,11 @@
 import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
-import App from "../App"; // Asegúrate de que la ruta sea correcta
-import { foodItemsContext } from "../App"; // Para usar el contexto si es necesario
-import { describe, it, expect } from 'vitest'; // Usa `vitest` para las pruebas
-import '@testing-library/jest-dom'; // Importa las aserciones extendidas
+import App from "../App";
+import { Provider } from "react-redux";
+import  { store } from "../store"; // Importa el store de Redux
+import { describe, it, expect } from "vitest";
+import "@testing-library/jest-dom";
 
-// Mock de los datos de menú
+// Mock de los datos del menú
 const mockMenuItems = [
   { id: 1, name: "Hamburguesa de Pollo", quantity: 40, price: 24, image: "cb.jpg", desc: "Hamburguesa de pollo frito - … y mayonesa" },
   { id: 2, name: "Hamburguesa Vegetariana", quantity: 30, price: 28, image: "cbvegan.jpg", desc: "Hamburguesa vegetariana - … y mayonesa" },
@@ -15,95 +16,64 @@ const mockMenuItems = [
 describe("Comida Rápida App", () => {
   it("muestra 4 productos en la carta inicial con stock, imagen y nombre", async () => {
     render(
-      <foodItemsContext.Provider value={mockMenuItems}>
+      <Provider store={store}>
         <App />
-      </foodItemsContext.Provider>
+      </Provider>
     );
-  
-    // Esperar hasta que el contenido esté completamente cargado
+
     await waitFor(() => {
       mockMenuItems.forEach((item) => {
-        // Verificar que el nombre del producto está presente
         expect(screen.getByText(item.name)).toBeInTheDocument();
-  
-        // Verificar que la cantidad disponible está en pantalla
         expect(screen.getByText(`#${item.quantity} disponibles`)).toBeInTheDocument();
       });
     });
-  
+
     // Seleccionamos solo los botones "Pedir" dentro de la lista de productos
-    const productList = screen.getByRole('list'); // Seleccionamos la lista de productos
-    const orderButtons = within(productList).getAllByRole('button', { name: /Pedir/ });
-  
-    // Verificamos que hay exactamente 4 botones "Pedir" dentro de la lista
+    const productList = screen.getByRole("list");
+    const orderButtons = within(productList).getAllByRole("button", { name: /Pedir/ });
+
     expect(orderButtons).toHaveLength(4);
   });
-  
-  
 
-
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  /*
-  
-  it("muestra 4 productos en la pantalla de 'Pedir Comida' con sus precios", async () => {
+  it("permite seleccionar un producto y muestra su información", async () => {
     render(
-      <foodItemsContext.Provider value={mockMenuItems}>
+      <Provider store={store}>
         <App />
-      </foodItemsContext.Provider>
+      </Provider>
     );
-  
-    // Simulamos hacer clic en "Pedir" del primer producto
+
+    // Simular clic en el botón "Pedir" del primer producto
     fireEvent.click(screen.getAllByText("Pedir")[0]);
-  
-    // Esperamos a que los productos estén visibles y los precios carguen
+
+    // Verificar que se muestra la información del producto seleccionado
     await waitFor(() => {
-      mockMenuItems.forEach((item) => {
-        // Verificar que el nombre del producto está presente
-        expect(screen.getByText(item.name)).toBeInTheDocument();
-  
-        // Verificar el precio del producto con la expresión regular
-        expect(
-          screen.getByText(new RegExp(`Precio:\\s*${item.price}\\s?\\$\\s?/ unidad`, 'i'))
-        ).toBeInTheDocument();
-      });
+      expect(screen.getByText(mockMenuItems[0].name)).toBeInTheDocument();
     });
-  
-    // Verificar que hay exactamente 4 imágenes
-    expect(screen.getAllByAltText(/.+/)).toHaveLength(4); // Todas las imágenes deben aparecer
   });
-  
-  
-*/
 
-  it("actualiza correctamente el precio total para una cantidad introducida", () => {
+  it("actualiza correctamente el precio total cuando se introduce una cantidad", async () => {
     render(
-      <foodItemsContext.Provider value={mockMenuItems}>
+      <Provider store={store}>
         <App />
-      </foodItemsContext.Provider>
+      </Provider>
     );
 
-    // Simular hacer clic en "Pedir" del primer producto
+    // Simular clic en "Pedir" del primer producto
     fireEvent.click(screen.getAllByText("Pedir")[0]);
 
-    // Cambiar la cantidad en el formulario de pedido
-    const quantityInput = screen.getByLabelText("Cantidad:");
+    // Esperar a que la pantalla de pedido se muestre
+    await waitFor(() => {
+      expect(screen.getByText(mockMenuItems[0].name)).toBeInTheDocument();
+    });
+
+    // Simular cambio en el input de cantidad
+    const quantityInput = screen.getByLabelText(/Cantidad:/i);
     fireEvent.change(quantityInput, { target: { value: "3" } });
 
     // Verificar que el precio total se actualiza correctamente
     const totalPrice = mockMenuItems[0].price * 3;
-    expect(screen.getByText(`Total: ${totalPrice}$`)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(`Total: ${totalPrice}$`)).toBeInTheDocument();
+    });
   });
 });
-  
-  
-  
-

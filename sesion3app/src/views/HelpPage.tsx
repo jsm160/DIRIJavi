@@ -6,7 +6,7 @@ const HelpPage: React.FC = () => {
 
   return (
     <div>
-      <h1>Ayuda</h1>
+      <h1 className="text-3xl font-bold bg-blue-200 text-center">Ayuda</h1>
       <nav>
         <ul>
           <li>
@@ -28,6 +28,16 @@ const HelpPage: React.FC = () => {
               }}
             >
               Referencia
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/help/card"
+              style={{
+                textDecoration: location.pathname === '/help/card' ? 'underline' : 'none',
+              }}
+            >
+              Card
             </Link>
           </li>
         </ul>

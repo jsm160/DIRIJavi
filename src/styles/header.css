@@ -1,4 +1,5 @@
 /* General para el Header */
+
 .header {
     display: flex;
     justify-content: space-between; /* Espacio entre los elementos */

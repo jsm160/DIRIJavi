@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Header from './Header';
 import Content from './Content';
 
 const TaskLogging: React.FC = () => {
   return (
-    <div className="notificationsFrame">
-      <div className="panel">
-       
+    <div className="notificationsFrame bg-gray-200 p-4 rounded-lg shadow-md">
+      <div className="panel bg-black text-white p-6 rounded-md shadow">
         <div className="section">
           <Header title="Registro de Tareas" />
-          <Content /> 
+          <Content />
         </div>
 
-        {/* Otras secciones */}
         <div className="section">
           <Header title="Perfil" />
         </div>
@@ -22,6 +20,8 @@ const TaskLogging: React.FC = () => {
         <div className="section">
           <Header title="Chat" />
         </div>
+        <div className="bg-red-500 text-white">Esto es un test de Tailwind</div>
+
       </div>
     </div>
   );

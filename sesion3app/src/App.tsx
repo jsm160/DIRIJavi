@@ -3,14 +3,14 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ItemListPage from './views/ItemListPage';
 import ItemDetailPage from './views/ItemDetailPage';
-import { Item } from './models/Item';
+
 import Header from './components/Header';  // Importa el componente Header
 import './App.css';  // Importa el archivo de estilos
 import HelpPage from './views/HelpPage';
 import Card from './components/Card';
 import logo from "./assets/dlsi.png"; 
 import { useTranslation } from "react-i18next"; // Importa el hook useTranslation
-import { t } from 'i18next';
+
 
 const App: React.FC = () => {
   const { t, i18n } = useTranslation();

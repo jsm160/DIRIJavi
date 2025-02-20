@@ -1,33 +1,36 @@
+/* Importación de TailwindCSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* Tus reglas personalizadas van aquí */
 body {
-    font-family: Arial, sans-serif;
-    background-color: white;
-  }
+  font-family: Arial, sans-serif;
+  background-color: white;
+}
 
-  h1 {
-    font-size: 2rem;
-    color: white;
-  }
-  .searchInput {
-    padding: .5em 1em;
-    border-radius: 2em;
-    border: 2px solid #ddd;
-    width: 40%; 
-    font-size: 1rem;
-    outline: none;
-  }
+h1 {
+  font-size: 2rem;
+  color: white;
+}
 
-  .notificationsFrame {
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-  }
-  
-  .panel {
-    width: 80%;
-    background-color: black;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    color: white;
-  }
-  
+.searchInput {
+  padding: .5em 1em;
+  border-radius: 2em;
+  border: 2px solid #ddd;
+  width: 40%;
+  font-size: 1rem;
+  outline: none;
+}
+
+.notificationsFrame {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.panel {
+  width: 80%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
